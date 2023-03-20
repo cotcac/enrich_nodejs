@@ -1,0 +1,10 @@
+GET /stylesheets/style.css 404 5.716 ms - 1287
+GET / 200 2.945 ms - 755
+GET /static/images/1.png 304 1.085 ms - -
+GET /stylesheets/style.css 404 5.434 ms - 1287
+GET / 304 3.294 ms - -
+GET /static/images/1.png 304 0.906 ms - -
+GET /stylesheets/style.css 404 7.245 ms - 1287
+GET / 500 4.394 ms - 807
+GET /static/images/1.png 304 0.706 ms - -
+GET /stylesheets/style.css 404 9.067 ms - 1287
