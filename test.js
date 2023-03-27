@@ -1,5 +1,24 @@
-const {name, name1, print_name} = require('./local_modules/hello')
-console.log(name);
-console.log(name1);
+const mongoose = require('mongoose');
 
-print_name("my name");
+const start = async () => {
+    try {
+      await mongoose.connect(
+        "mongodb://localhost:27017/notesdb"
+      );
+      console.log("connected to mongodb!");
+      const kittySchema = new mongoose.Schema({
+        name: String
+      });
+
+      const Kitten = mongoose.model('Kitten', kittySchema);
+
+      const silence = new Kitten({ name: 'Silence' });
+      console.log(silence.name);
+    
+    } catch (error) {
+      console.error(error);
+      process.exit(1);
+    }
+  };
+  
+  start();

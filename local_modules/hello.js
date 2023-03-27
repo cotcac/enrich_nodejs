@@ -1,7 +1,6 @@
-exports.name = 'ABC';
-exports.name1 = 'ABCD';
+const mongoose = require('mongoose');
+async function main() {
+  await mongoose.connect('mongodb://127.0.0.1:27017/test');
 
-const printName = function(name) {
-    console.log('hello ' + name);
+  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
-exports.print_name = printName;
