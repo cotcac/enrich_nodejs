@@ -17,7 +17,13 @@ router.get('/', async function(req, res, next) {
     }
 });
 // get one topic
-router.get('/:id', async function(req, res, next) {
+router.get('/:id',
+body('title')
+    .isLength({min: 5, max: 50})
+    .withMessage('must be from 5 - 50 chars long')
+    .trim()
+    .escape(),
+ async function(req, res, next) {
     const id = req.params.id;
     try {
         const topics = await findById(id);
@@ -34,9 +40,13 @@ router.post('/', async function(req, res, next) {
     }
     try {
         const topic = await insert(newTopic);
-        res.json(topic);
+        res.status(201).json(topic);
     } catch (error) {
-        next(error)
+        const msg = error.message;
+        console.log(msg);
+        res.status(400).json({
+            message: msg
+        })
     }
   });
 // update topic
@@ -54,7 +64,12 @@ router.put('/:id', async function(req, res, next) {
 router.delete('/:id', async function(req, res, next) {
     const id = req.params.id;
     try {
+        // find in db first.
+        // check response
         const topics = await deleteTopic(id);
+        if(topics.deletedCount === 0) {
+            return res.status(404).send("Not found")
+        }
         res.json(topics);
     } catch (error) {
         next(error)
