@@ -19,7 +19,8 @@
     "mongoose": "^7.0.2",
     "morgan": "~1.9.1",
     "nanoid": "^4.0.1",
-    "shortid": "^2.2.16"
+    "shortid": "^2.2.16",
+    "sinon": "^15.0.3"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

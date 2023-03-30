@@ -1,71 +1,108 @@
-const request = require("supertest");
-const app = require("../app");
+const request = require('supertest');
+const sinon = require('sinon');
+const app = require('../app');
+const {topicModel} = require('../db/mdl_topic');
 
-beforeAll(() => {
-  initializeCityDatabase();
+const error = new Error('some fake error');
+// Update topic
+describe('Test topic UPDATE API', () => {
+  test('It should response success: 200', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'edit');
+    mocktopicModel.withArgs('id', {name: 'john'}).returns({});
+    const response = await request(app).put('/topic/id').send({name: 'john'});
+    expect(response.statusCode).toBe(200);
+    mocktopicModel.restore();
+  });
+  test('It should response Error: 500', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'edit');
+    mocktopicModel.withArgs('id', {name: 'john'}).throws(error);
+    const response = await request(app).put('/topic/id').send({name: 'john'});
+    expect(response.statusCode).toBe(500);
+    mocktopicModel.restore();
+  });
 });
-
-// Post topic api
-describe("Test topic POST API", () => {
-
-  test("It should response 201", async () => {
-    const response = await request(app).post("/topic").send({name: 'john'});
-    expect(response.statusCode).toBe(201);
+// GET topic detail
+describe('Test GET topic detail API', () => {
+  test('It should response success: 200', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'findById');
+    mocktopicModel.returns({});
+    const response = await request(app).get('/topic/id');
+    expect(response.statusCode).toBe(200);
+    mocktopicModel.restore();
   });
-
-  test("It should response 400: error missing property name", async () => {
-    const response = await request(app).post("/topic").send({});
-    expect(response.statusCode).toBe(400);
+  // 500
+  test('It should response error: 500', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'findById');
+    mocktopicModel.throws(error);
+    const response = await request(app).get('/topic/id');
+    expect(response.statusCode).toBe(500);
+    mocktopicModel.restore();
   });
-
-  test("It should response 400: error less than 5 chars", async () => {
-    const response = await request(app).post("/topic").send({name:true});
-    expect(response.statusCode).toBe(400);
-  });
-  test("It should response 400: error more than 50 chars", async () => {
-    const name51char = "This usually means that there are asynchronous operations that weren't stopped in your tests. Consider running Jest with `--detectOpenHandles` to troubleshoot this issue"
-    const response = await request(app).post("/topic").send({name:name51char});
-    expect(response.statusCode).toBe(400);
-  });
-
 });
-
 // GET topic api
-describe("Test topic GET API", () => {
-    test("It should response the GET method", async () => {
-      const response = await request(app).get("/topic");
-      expect(response.statusCode).toBe(200);
-    });
+describe('Test topic GET API', () => {
+  test('It should response the GET method', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'list');
+    mocktopicModel.returns([]);
+    const response = await request(app).get('/topic');
+    expect(response.statusCode).toBe(200);
+    mocktopicModel.restore();
+  });
+  // 500
+  test('It should response error: 500', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'list');
+    mocktopicModel.throws(error);
+    const response = await request(app).get('/topic');
+    expect(response.statusCode).toBe(500);
+    mocktopicModel.restore();
+  });
 });
 
-// Delete topic API
-describe("Test topic GET API", () => {
-    test("It should response the GET method", async () => {
-      const response = await request(app).delete("/topic/");
-      expect(response.statusCode).toBe(200);
-    });
+// POST topic API
+describe('Test topic POST API', () => {
+  test('It should response success: 200', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'insert');
+    mocktopicModel.withArgs('abc').returns({});
+    const response = await request(app).post('/topic').send({name: 'john'});
+    expect(response.statusCode).toBe(201);
+    mocktopicModel.restore();
+  });
+  test('It should response Error: 500', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'insert');
+    mocktopicModel.withArgs({name: 'john'}).throws(error);
+    const response = await request(app).post('/topic').send({name: 'john'});
+    expect(response.statusCode).toBe(500);
+    mocktopicModel.restore();
+  });
 });
+
 // Test delete topic API
-describe("Test topic DELETE API", () => {
-    // let delete_topic_id = "";
-    // beforeEach( async () => {
-    //     // insert a topic to db then reasign id to id above.
-    //     const topic = await request(app).post("/topic").send({name: 'john'});
-    //     delete_topic_id = topic._body._id;
-
-    //     // initializeCityDatabase();
-    // });
-    const fake_id ="not_exist";
-    test("It should response error: 404 item not exist in db", async () => {
-      const response = await request(app).delete(`/topic/${fake_id}`);
-      expect(response.statusCode).toBe(404);
+describe('Test topic DELETE API', () => {
+  test('It should response success: 200', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'del');
+    mocktopicModel.withArgs('abc').returns({
+      acknowledged: true,
+      deletedCount: 1,
     });
-
-    test("It should response success: 200", async () => {
-      //  const topic = await request(app).post("/topic").send({name: 'john'});
-       const delete_topic_id =  "q-QtVFYuL"//topic._body._id;
-       console.log(delete_topic_id);
-       const response = await request(app).delete("/topic/"+delete_topic_id);
-       expect(response.statusCode).toBe(200);
-      });
+    const response = await request(app).delete('/topic/abc');
+    expect(response.statusCode).toBe(200);
+    mocktopicModel.restore();
+  });
+  test('It should response Error: 500', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'del');
+    mocktopicModel.withArgs('abc').throws(error);
+    const response = await request(app).delete('/topic/abc');
+    expect(response.statusCode).toBe(500);
+    mocktopicModel.restore();
+  });
+  test('It should response Error: 404', async () => {
+    const mocktopicModel = sinon.stub(topicModel, 'del');
+    mocktopicModel.withArgs('abc').returns({
+      acknowledged: false,
+      deletedCount: 0,
+    });
+    const response = await request(app).delete('/topic/abc');
+    expect(response.statusCode).toBe(404);
+    mocktopicModel.restore();
+  });
 });
