@@ -1,3 +1,5 @@
 node_modules
 .env
 coverage
+error.log
+combined.log

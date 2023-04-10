@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const shortid = require('shortid');
+const {logger} = require("../helper/logger")
 // mongoose.connect(
 // 	"mongodb://localhost:27017/notesdb"
 //   );
@@ -57,6 +58,7 @@ exports.topicModel = {
       return aaa;
     } catch (error) {
       console.log(error);
+      logger.error(error.message, {serice: "Mdl_topic.js"});
       throw error;
     }
   },

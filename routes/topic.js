@@ -2,16 +2,20 @@ const express = require('express');
 const router = express.Router();
 const {body, validationResult} = require('express-validator');
 const {topicModel} = require('../db/mdl_topic');
+const {logger} = require("../helper/logger")
 
 // CRUD
 
 // Get all topic
 router.get('/', async function (req, res, next) {
+  logger.info('hello', { message: 'Get topic start', 'service': "topic" });
   try {
+    logger.info("Started query topic list from mongodb");
     const topics = await topicModel.list(); // mock me
+    logger.info("Get topics success");
     res.json(topics);
   } catch (error) {
-    console.log(error);
+    logger.error("some error");
     next(error);
   }
 });
@@ -25,7 +29,7 @@ router.get('/:id', async function (req, res, next) {
     next(error);
   }
 });
-// insert new topic
+// insert new topic | Please use express-validator to validate data
 router.post('/', async function (req, res, next) {
   const body = req.body;
   const newTopic = {
